@@ -2,8 +2,9 @@ package com.ironhack.ironbank.service;
 
 
 import com.ironhack.ironbank.config.KeycloakProvider;
-import com.ironhack.ironbank.http.requests.KeycloakUser;
 import com.ironhack.ironbank.http.requests.RealmGroup;
+import com.ironhack.ironbank.users.DTO.AccountHolderDTO;
+import com.ironhack.ironbank.users.model.AccountHolder;
 import lombok.extern.java.Log;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
@@ -15,24 +16,27 @@ import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.List;
 
-import static com.ironhack.ironbank.http.requests.ClientRole.ACCOUNTHOLDER;
-import static com.ironhack.ironbank.http.requests.ClientRole.ADMIN;
-
 
 @Service
 @Log
 public class KeycloakAdminClientService {
     private final KeycloakProvider kcProvider;
+    final AdminService adminService;
+    final AccountHolderService acHoService;
     @Value("${keycloak.realm}")
     public String realm;
 
     @Value("${keycloak.resource}")
     public String clientId;
 
-
-    public KeycloakAdminClientService(KeycloakProvider keycloakProvider) {
+    public KeycloakAdminClientService(KeycloakProvider keycloakProvider, AdminService adminService, AccountHolderService acHoService) {
         this.kcProvider = keycloakProvider;
+        this.adminService = adminService;
+        this.acHoService = acHoService;
     }
+
+
+
 
     private static CredentialRepresentation createPasswordCredentials(String password) {
         CredentialRepresentation passwordCredentials = new CredentialRepresentation();
@@ -42,24 +46,27 @@ public class KeycloakAdminClientService {
         return passwordCredentials;
     }
 
-    public Response createKeycloakUser(KeycloakUser user, String role) {
+
+
+
+    public Response createAccountHolder(AccountHolderDTO user) {
+
+        String group = RealmGroup.ACCOUNTHOLDERS;
+
         var adminKeycloak = kcProvider.getInstance();
         UsersResource usersResource = kcProvider.getInstance().realm(realm).users();
         CredentialRepresentation credentialRepresentation = createPasswordCredentials(user.getPassword());
 
         UserRepresentation kcUser = new UserRepresentation();
         kcUser.setUsername(user.getUsername());
+        kcUser.setCredentials(Collections.singletonList(credentialRepresentation));
         kcUser.setFirstName(user.getFirstname());
         kcUser.setLastName(user.getLastname());
         kcUser.setEmail(user.getEmail());
-        kcUser.setCredentials(Collections.singletonList(credentialRepresentation));
         kcUser.setEnabled(true);
         kcUser.setEmailVerified(false);
 
-        switch (role) {
-            case ACCOUNTHOLDER -> kcUser.setGroups(List.of(RealmGroup.ACCOUNTHOLDERS));
-            case ADMIN -> kcUser.setGroups(List.of(RealmGroup.ADMINS));
-        }
+        kcUser.setGroups(List.of(group));
 
         Response response = usersResource.create(kcUser);
 
@@ -69,17 +76,17 @@ public class KeycloakAdminClientService {
                     .users()
                     .search(kcUser.getUsername())
                     .stream()
-                    // the next line gives me an error: index out of bound
-                    // .filter(userRep -> userRep.getUsername().equals(kcUser.getUsername()))
+                    //.filter(userRep -> userRep.getUsername().equals(kcUser.getUsername()))
                     .toList();
             var createdUser = userList.get(0);
             log.info("User with id: " + createdUser.getId() + " created");
-//            TODO you may add you logic to store and connect the keycloak user to the local user here
+
+            user.setId(createdUser.getId());
+            AccountHolder newAccountHolder = acHoService.add(AccountHolder.fromDTO(user));
+            log.info("User with id: " + newAccountHolder.getId() + " added to Database");
+
         }
-
         return response;
-
     }
-
 
 }

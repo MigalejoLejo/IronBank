@@ -2,9 +2,9 @@ package com.ironhack.ironbank.controller;
 
 
 import com.ironhack.ironbank.config.KeycloakProvider;
-import com.ironhack.ironbank.http.requests.KeycloakUser;
 import com.ironhack.ironbank.http.requests.TokenRequest;
 import com.ironhack.ironbank.service.KeycloakAdminClientService;
+import com.ironhack.ironbank.users.DTO.AccountHolderDTO;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,6 @@ import javax.ws.rs.core.Response;
 @RequestMapping("/user")
 public class UserController {
     private final KeycloakAdminClientService kcAdminClient;
-
     private final KeycloakProvider kcProvider;
 
 
@@ -29,14 +28,13 @@ public class UserController {
     }
 
 
-    @PostMapping(value = "/create/{role}")
-    public ResponseEntity<?> createUser(@RequestBody KeycloakUser user, @PathVariable String role) {
-        role = role.toLowerCase();
-        Response createdResponse = null;
-        createdResponse = kcAdminClient.createKeycloakUser(user, role);
+    @PostMapping(value = "/create/acc")
+    public ResponseEntity<?> createAccountHolder(@RequestBody AccountHolderDTO accountHolderDTO) {
+        Response createdResponse = kcAdminClient.createAccountHolder(accountHolderDTO);
         return ResponseEntity.status(createdResponse.getStatus()).build();
-
     }
+
+
 
     @PostMapping("/get-token")
     public ResponseEntity<AccessTokenResponse> login(@NotNull @RequestBody TokenRequest tokenRequest) {
