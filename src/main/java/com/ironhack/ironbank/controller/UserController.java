@@ -2,9 +2,9 @@ package com.ironhack.ironbank.controller;
 
 
 import com.ironhack.ironbank.config.KeycloakProvider;
-import com.ironhack.ironbank.http.requests.TokenRequest;
+import com.ironhack.ironbank.users.DTO.KeycloakUser;
+import com.ironhack.ironbank.users.DTO.TokenRequest;
 import com.ironhack.ironbank.service.KeycloakAdminClientService;
-import com.ironhack.ironbank.users.DTO.AccountHolderDTO;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.http.HttpStatus;
@@ -28,9 +28,9 @@ public class UserController {
     }
 
 
-    @PostMapping(value = "/create/acc")
-    public ResponseEntity<?> createAccountHolder(@RequestBody AccountHolderDTO accountHolderDTO) {
-        Response createdResponse = kcAdminClient.createAccountHolder(accountHolderDTO);
+    @PostMapping(value = "/create/{role}")
+    public ResponseEntity<?> createKeycloakUser(@RequestBody KeycloakUser user, @PathVariable String role) {
+        Response createdResponse = kcAdminClient.createKeycloakUser(user, role);
         return ResponseEntity.status(createdResponse.getStatus()).build();
     }
 

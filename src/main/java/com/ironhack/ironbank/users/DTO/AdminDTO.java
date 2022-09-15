@@ -5,25 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Date;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountHolderDTO {
+public class AdminDTO {
     String id;
     String username;
     String password;
     String email;
-    String firstname;
-    String lastname;
-    Date dateOfBirth;
-    String street;
-    String number;
-    String floor;
-    String postalCode;
-    String city;
-    String land;
+
 
 }
+

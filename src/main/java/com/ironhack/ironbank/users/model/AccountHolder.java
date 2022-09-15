@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.users.model;
 
+import com.ironhack.ironbank.users.DTO.KeycloakUser;
 import com.ironhack.ironbank.users.DTO.AccountHolderDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class AccountHolder{
     String id;
     String username;
     String email;
+    String password;
     String firstname;
     String lastname;
     Date dateOfBirth;
@@ -29,9 +31,10 @@ public class AccountHolder{
     Address address;
 
 
-    public AccountHolder(String username, String email, String firstname, String lastname, Date dateOfBirth, Address address) {
+    public AccountHolder(String username, String email, String password, String firstname, String lastname, Date dateOfBirth, Address address) {
         this.username = username;
         this.email = email;
+        this.password = password;
         this.firstname = firstname;
         this.lastname = lastname;
         this.dateOfBirth = dateOfBirth;
@@ -45,6 +48,7 @@ public class AccountHolder{
               accountHolderDTO.getId(),
               accountHolderDTO.getUsername(),
               accountHolderDTO.getEmail(),
+              accountHolderDTO.getPassword(),
               accountHolderDTO.getFirstname(),
               accountHolderDTO.getLastname(),
               accountHolderDTO.getDateOfBirth(),
@@ -56,6 +60,26 @@ public class AccountHolder{
                     accountHolderDTO.getCity(),
                     accountHolderDTO.getLand()
               )
+        );
+    }
+
+    public static AccountHolder fromKeycloakUser(KeycloakUser user){
+        return new AccountHolder(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getFirstname(),
+                user.getLastname(),
+                user.getDateOfBirth(),
+                new Address(
+                        user.getStreet(),
+                        user.getNumber(),
+                        user.getFloor(),
+                        user.getPostalCode(),
+                        user.getCity(),
+                        user.getLand()
+                )
         );
     }
 }

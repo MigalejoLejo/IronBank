@@ -1,4 +1,4 @@
-package com.ironhack.ironbank.http.requests;
+package com.ironhack.ironbank.users.roles;
 
 public interface RealmGroup {
     String ACCOUNTHOLDERS = "accountholders";
