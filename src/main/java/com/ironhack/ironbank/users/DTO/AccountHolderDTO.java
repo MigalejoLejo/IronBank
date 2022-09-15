@@ -1,5 +1,7 @@
 package com.ironhack.ironbank.users.DTO;
 
+import com.ironhack.ironbank.users.model.AccountHolder;
+import com.ironhack.ironbank.users.model.Address;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,4 +28,21 @@ public class AccountHolderDTO {
     String city;
     String land;
 
+    public static AccountHolderDTO fromEntity(AccountHolder accountHolder) {
+        return new AccountHolderDTO(
+                accountHolder.getId(),
+                accountHolder.getUsername(),
+                accountHolder.getEmail(),
+                accountHolder.getPassword(),
+                accountHolder.getFirstname(),
+                accountHolder.getLastname(),
+                accountHolder.getDateOfBirth(),
+                accountHolder.getAddress().getStreet(),
+                accountHolder.getAddress().getNumber(),
+                accountHolder.getAddress().getFloor(),
+                accountHolder.getAddress().getPostalCode(),
+                accountHolder.getAddress().getCity(),
+                accountHolder.getAddress().getLand()
+        );
+    }
 }

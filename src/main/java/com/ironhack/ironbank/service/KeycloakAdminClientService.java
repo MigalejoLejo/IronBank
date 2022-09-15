@@ -2,6 +2,8 @@ package com.ironhack.ironbank.service;
 
 
 import com.ironhack.ironbank.config.KeycloakProvider;
+import com.ironhack.ironbank.users.DTO.AccountHolderDTO;
+import com.ironhack.ironbank.users.DTO.AdminDTO;
 import com.ironhack.ironbank.users.DTO.KeycloakUser;
 import com.ironhack.ironbank.users.roles.RealmGroup;
 import com.ironhack.ironbank.users.roles.UserRole;
@@ -61,6 +63,15 @@ public class KeycloakAdminClientService {
 
         String group = null;
 
+        if (user.getUsername().contains(" ")){
+            log.severe("BAD REQUEST - Username contains spaces");
+            return Response
+                    .status(HttpStatus.SC_BAD_REQUEST,"Username contains spaces")
+                    .encoding("Encoding: Username contains spaces")
+                    .tag("tag: username contains spaces")
+                    .build();
+        }
+
         switch (role.toLowerCase()){
             case UserRole.ACCOUNTHOLDER -> {
                 group = RealmGroup.ACCOUNTHOLDERS;
@@ -69,14 +80,17 @@ public class KeycloakAdminClientService {
                         || user.getPostalCode() == null
                         || user.getCity() == null
                         || user.getLand() == null ) {
+                    log.info("BAD REQUEST - The Address is incomplete");
                     return Response.status(HttpStatus.SC_BAD_REQUEST,"The Address is incomplete").build();
+
                 }
             }
             case UserRole.ADMIN -> {
                 group = RealmGroup.ADMINS;
             }
             default -> {
-               return Response.status(HttpStatus.SC_BAD_REQUEST,"The role entered does not exist").build();
+                log.info("BAD REQUEST - The Role entered does not exist");
+                return Response.status(HttpStatus.SC_BAD_REQUEST,"The role entered does not exist").build();
             }
         }
 
@@ -115,16 +129,19 @@ public class KeycloakAdminClientService {
 
             switch (role.toLowerCase()){
                 case UserRole.ACCOUNTHOLDER -> {
-                    AccountHolder newAccountHolder = acHoService.add(AccountHolder.fromKeycloakUser(user));
+                    AccountHolderDTO newAccountHolder = acHoService.add(AccountHolder.fromKeycloakUser(user));
                     log.info("Account holder with id: " + newAccountHolder.getId() + " added to Database");
                 }
                 case UserRole.ADMIN -> {
-                    Admin newAdmin = adminService.add(Admin.fromKeycloakUser(user));
+                    AdminDTO newAdmin = adminService.add(Admin.fromKeycloakUser(user));
                     log.info("Admin with id: " + newAdmin.getId() + " added to Database");
                 }
             }
         }
         return response;
     }
+
+
+
 
 }
