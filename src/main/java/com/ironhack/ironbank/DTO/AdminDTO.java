@@ -1,6 +1,6 @@
-package com.ironhack.ironbank.users.DTO;
+package com.ironhack.ironbank.DTO;
 
-import com.ironhack.ironbank.users.model.Admin;
+import com.ironhack.ironbank.model.Admin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

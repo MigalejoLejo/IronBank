@@ -1,7 +1,7 @@
 package com.ironhack.ironbank.config;
 
-import com.ironhack.ironbank.users.roles.ClientRole;
-import com.ironhack.ironbank.users.roles.UserRole;
+import com.ironhack.ironbank.roles.ClientRole;
+import com.ironhack.ironbank.roles.UserRole;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;

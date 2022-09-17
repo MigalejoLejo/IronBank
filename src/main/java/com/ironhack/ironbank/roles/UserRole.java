@@ -1,4 +1,4 @@
-package com.ironhack.ironbank.users.roles;
+package com.ironhack.ironbank.roles;
 
 public interface UserRole extends ClientRole{
 

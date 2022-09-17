@@ -2,14 +2,13 @@ package com.ironhack.ironbank.controller;
 
 
 import com.ironhack.ironbank.service.AccountHolderService;
-import com.ironhack.ironbank.users.DTO.AccountHolderDTO;
+import com.ironhack.ironbank.DTO.AccountHolderDTO;
 import lombok.extern.java.Log;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.core.Response;
 import java.security.Principal;
 
 

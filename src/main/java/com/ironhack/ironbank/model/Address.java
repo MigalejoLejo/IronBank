@@ -1,4 +1,4 @@
-package com.ironhack.ironbank.users.model;
+package com.ironhack.ironbank.model;
 
 
 import lombok.AllArgsConstructor;

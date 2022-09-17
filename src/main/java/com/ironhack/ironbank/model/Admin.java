@@ -1,7 +1,7 @@
-package com.ironhack.ironbank.users.model;
+package com.ironhack.ironbank.model;
 
-import com.ironhack.ironbank.users.DTO.KeycloakUser;
-import com.ironhack.ironbank.users.DTO.AdminDTO;
+import com.ironhack.ironbank.DTO.KeycloakUser;
+import com.ironhack.ironbank.DTO.AdminDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -2,13 +2,13 @@ package com.ironhack.ironbank.service;
 
 
 import com.ironhack.ironbank.config.KeycloakProvider;
-import com.ironhack.ironbank.users.DTO.AccountHolderDTO;
-import com.ironhack.ironbank.users.DTO.AdminDTO;
-import com.ironhack.ironbank.users.DTO.KeycloakUser;
-import com.ironhack.ironbank.users.roles.RealmGroup;
-import com.ironhack.ironbank.users.roles.UserRole;
-import com.ironhack.ironbank.users.model.AccountHolder;
-import com.ironhack.ironbank.users.model.Admin;
+import com.ironhack.ironbank.DTO.AccountHolderDTO;
+import com.ironhack.ironbank.DTO.AdminDTO;
+import com.ironhack.ironbank.DTO.KeycloakUser;
+import com.ironhack.ironbank.roles.RealmGroup;
+import com.ironhack.ironbank.roles.UserRole;
+import com.ironhack.ironbank.model.AccountHolder;
+import com.ironhack.ironbank.model.Admin;
 import lombok.extern.java.Log;
 import org.apache.http.HttpStatus;
 import org.keycloak.admin.client.resource.UsersResource;
@@ -63,30 +63,40 @@ public class KeycloakAdminClientService {
 
         String group = null;
 
+        // Check if the entered Username is correct.
         if (user.getUsername().contains(" ")){
             log.severe("BAD REQUEST - Username contains spaces");
             return Response
                     .status(HttpStatus.SC_BAD_REQUEST,"Username contains spaces")
-                    .encoding("Encoding: Username contains spaces")
-                    .tag("tag: username contains spaces")
                     .build();
         }
 
+        // todo: check if user already exist and provide that info
+
+        // Set role accordingly and check if the needed information is complete for either an AccountHolder or an Admin
         switch (role.toLowerCase()){
             case UserRole.ACCOUNTHOLDER -> {
                 group = RealmGroup.ACCOUNTHOLDERS;
-                if (user.getStreet() == null
+                if (user.getPassword() == null
+                        || user.getEmail() == null
+                        || user.getFirstname() == null
+                        || user.getLastname() == null
+                        || user.getDateOfBirth() == null
+                        || user.getStreet() == null
                         || user.getNumber() == null
                         || user.getPostalCode() == null
                         || user.getCity() == null
                         || user.getLand() == null ) {
-                    log.info("BAD REQUEST - The Address is incomplete");
-                    return Response.status(HttpStatus.SC_BAD_REQUEST,"The Address is incomplete").build();
-
+                    log.info("BAD REQUEST - Accountholder Information is incomplete");
+                    return Response.status(HttpStatus.SC_BAD_REQUEST,"Accountholder Information is incomplete").build();
                 }
             }
             case UserRole.ADMIN -> {
                 group = RealmGroup.ADMINS;
+                if (user.getPassword() == null || user.getEmail() == null) {
+                    log.info("BAD REQUEST - Admin Information is incomplete");
+                    return Response.status(HttpStatus.SC_BAD_REQUEST,"Admin Information is incomplete").build();
+                }
             }
             default -> {
                 log.info("BAD REQUEST - The Role entered does not exist");
@@ -94,7 +104,7 @@ public class KeycloakAdminClientService {
             }
         }
 
-
+        // Proceed to create user in KeyCloak and a Response
         var adminKeycloak = kcProvider.getInstance();
         UsersResource usersResource = kcProvider.getInstance().realm(realm).users();
         CredentialRepresentation credentialRepresentation = createPasswordCredentials(user.getPassword());
@@ -112,6 +122,9 @@ public class KeycloakAdminClientService {
 
         Response response = usersResource.create(kcUser);
 
+        // If the user was created properly the user is added to the DB as well
+
+        // First we get the created user from KeyCloak
         if (response.getStatus() == 201) {
             List<UserRepresentation> userList = adminKeycloak
                     .realm(realm)
@@ -121,12 +134,14 @@ public class KeycloakAdminClientService {
                     //.filter(userRep -> userRep.getUsername().equals(kcUser.getUsername()))
                     .toList();
 
+            // here we retrieve the user from KeyCloak to get the assigned ID
             var createdUser = userList.get(0);
             log.info("User with id: " + createdUser.getId() + " created");
 
-
+            // The ID is associated to the DTO.
             user.setId(createdUser.getId());
 
+            // Now a full Entity (ID Included) is created and finally added to the DB
             switch (role.toLowerCase()){
                 case UserRole.ACCOUNTHOLDER -> {
                     AccountHolderDTO newAccountHolder = acHoService.add(AccountHolder.fromKeycloakUser(user));
@@ -140,6 +155,7 @@ public class KeycloakAdminClientService {
         }
         return response;
     }
+
 
 
 

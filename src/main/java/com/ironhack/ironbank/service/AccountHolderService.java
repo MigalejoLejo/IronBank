@@ -1,7 +1,7 @@
 package com.ironhack.ironbank.service;
 
-import com.ironhack.ironbank.users.DTO.AccountHolderDTO;
-import com.ironhack.ironbank.users.model.AccountHolder;
+import com.ironhack.ironbank.DTO.AccountHolderDTO;
+import com.ironhack.ironbank.model.AccountHolder;
 import com.ironhack.ironbank.repository.AccountHolderRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,11 @@ public class AccountHolderService {
         this.acHoRepo = acHoRepo;
     }
 
+
+
+    //--------------------------------------------------------------
+    // METHODS AND LOGIC:
+    //--------------------------------------------------------------
 
     public AccountHolderDTO add(AccountHolder accountHolder){
         return AccountHolderDTO.fromEntity(acHoRepo.save(accountHolder));

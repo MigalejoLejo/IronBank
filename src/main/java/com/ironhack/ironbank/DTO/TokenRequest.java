@@ -1,4 +1,4 @@
-package com.ironhack.ironbank.users.DTO;
+package com.ironhack.ironbank.DTO;
 
 import lombok.Getter;
 

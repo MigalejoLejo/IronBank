@@ -2,10 +2,8 @@ package com.ironhack.ironbank.service;
 
 
 import com.ironhack.ironbank.repository.AdminRepository;
-import com.ironhack.ironbank.users.DTO.AccountHolderDTO;
-import com.ironhack.ironbank.users.DTO.AdminDTO;
-import com.ironhack.ironbank.users.model.Admin;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ironhack.ironbank.DTO.AdminDTO;
+import com.ironhack.ironbank.model.Admin;
 import org.springframework.stereotype.Service;
 
 @Service

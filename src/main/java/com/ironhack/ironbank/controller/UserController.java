@@ -2,8 +2,8 @@ package com.ironhack.ironbank.controller;
 
 
 import com.ironhack.ironbank.config.KeycloakProvider;
-import com.ironhack.ironbank.users.DTO.KeycloakUser;
-import com.ironhack.ironbank.users.DTO.TokenRequest;
+import com.ironhack.ironbank.DTO.KeycloakUser;
+import com.ironhack.ironbank.DTO.TokenRequest;
 import com.ironhack.ironbank.service.KeycloakAdminClientService;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.AccessTokenResponse;
