@@ -1,11 +1,13 @@
 package com.ironhack.ironbank.repository;
 
-import com.ironhack.ironbank.model.Admin;
+import com.ironhack.ironbank.model.CreditAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
 
 @Repository
-public interface AdminRepository extends JpaRepository<Admin, String> {
-    Admin findByUsername(String username);
+public interface CreditAccountRepository extends JpaRepository<CreditAccount, UUID> {
+
+
 }

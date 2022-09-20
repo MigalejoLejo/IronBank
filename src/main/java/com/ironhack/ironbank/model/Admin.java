@@ -1,6 +1,5 @@
 package com.ironhack.ironbank.model;
 
-import com.ironhack.ironbank.DTO.KeycloakUser;
 import com.ironhack.ironbank.DTO.AdminDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,12 +40,4 @@ public class Admin  {
         );
     }
 
-    public static Admin fromKeycloakUser(KeycloakUser user){
-        return new Admin(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getPassword()
-                );
-    }
 }

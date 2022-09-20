@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -19,7 +19,7 @@ public class AccountHolderDTO {
     String email;
     String firstname;
     String lastname;
-    Date dateOfBirth;
+    LocalDate dateOfBirth;
     String street;
     String number;
     String floor;

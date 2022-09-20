@@ -1,4 +1,4 @@
-package com.ironhack.ironbank.DTO;
+package com.ironhack.ironbank.helpclasses;
 
 import lombok.Getter;
 

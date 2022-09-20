@@ -9,25 +9,33 @@ import org.springframework.stereotype.Service;
 public class AccountHolderService {
 
     final
-    AccountHolderRepository acHoRepo;
+    AccountHolderRepository accountHolderRepo;
 
-    public AccountHolderService(AccountHolderRepository acHoRepo) {
-        this.acHoRepo = acHoRepo;
+    public AccountHolderService(AccountHolderRepository accountHolderRepo) {
+        this.accountHolderRepo = accountHolderRepo;
     }
 
 
-
-    //--------------------------------------------------------------
     // METHODS AND LOGIC:
-    //--------------------------------------------------------------
-
-    public AccountHolderDTO add(AccountHolder accountHolder){
-        return AccountHolderDTO.fromEntity(acHoRepo.save(accountHolder));
+    // **************************************************************************
+    public AccountHolderDTO getByUsername(String username) {
+        AccountHolderDTO accountHolderDTO = null;
+        if (accountHolderRepo.findByUsername(username) != null){
+            accountHolderDTO = AccountHolderDTO.fromEntity(accountHolderRepo.findByUsername(username));
+        }
+        return accountHolderDTO;
     }
 
-    public AccountHolderDTO getByUsername(String username){
-        var accHolder = acHoRepo.findByUsername(username);
-        return AccountHolderDTO.fromEntity(accHolder);
+    public AccountHolderDTO getById(String id) {
+        if (id == null || accountHolderRepo.findById(id).isEmpty()){
+            return null;
+        } else {
+            return AccountHolderDTO.fromEntity(accountHolderRepo.findById(id).get());
+        }
+    }
+
+    public AccountHolder add (AccountHolder accountHolder){
+        return accountHolderRepo.save(accountHolder);
     }
 
 
