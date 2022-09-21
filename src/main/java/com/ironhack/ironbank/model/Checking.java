@@ -50,6 +50,7 @@ public class Checking{
 
     public static Checking createAccount(AccountHolder primaryOwner, Money balance){
         Checking newAccount = new Checking(primaryOwner, balance);
+        newAccount.secretKey = UUID.randomUUID();
         newAccount.creationDate = Instant.now();
         newAccount.accountStatus = AccountStatus.OPEN;
         return newAccount;
@@ -58,14 +59,17 @@ public class Checking{
 
     @Override
     public String toString() {
-        return "Checking{" + "accountID=" + accountID +
-                ", secretKey=" + secretKey +
-                ", primaryOwner=" + primaryOwner +
-                ", secondaryOwner=" + secondaryOwner +
-                ", balance=" + balance +
-                ", creationDate=" + creationDate +
-                ", accountStatus=" + accountStatus +
-                '}';
+        return "Checking Account - " + "accountID: " + accountID + "\n"+
+                "secretKey: " + secretKey + "\n"+
+                "primaryOwner: \n" +
+                "  Owner ID: "+ primaryOwner.getId() + "\n" +
+                "  Owner Name: "+ primaryOwner.getFirstname() +" "+ primaryOwner.getLastname()+ "\n" +
+                "secondaryOwner: \n" +
+                "  Owner ID: "+ secondaryOwner.getId() + "\n" +
+                "  Owner Name: "+ secondaryOwner.getFirstname() +" "+ secondaryOwner.getLastname()+ "\n" +
+                "balance: " + balance + "\n"+
+                "creationDate: " + creationDate + "\n"+
+                "accountStatus: " + accountStatus ;
     }
 }
 

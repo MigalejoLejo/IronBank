@@ -29,11 +29,17 @@ public class AccountHolder{
     @Embedded
     Address address;
 
-    @OneToMany(mappedBy = "primaryOwner")
+    @OneToMany(fetch = FetchType.LAZY)
     List<Checking> checkingAccounts;
 
-    @OneToMany(mappedBy = "primaryOwner")
+    @OneToMany(fetch = FetchType.LAZY)
     List<StudentChecking> studentCheckingAccounts;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    List<CreditAccount> creditAccounts;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    List<Savings> savingsAccounts;
 
 
     public AccountHolder(String id, String username, String email, String password, String firstname, String lastname, LocalDate dateOfBirth, Address address) {

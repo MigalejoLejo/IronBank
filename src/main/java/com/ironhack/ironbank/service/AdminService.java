@@ -1,17 +1,13 @@
 package com.ironhack.ironbank.service;
 
 
-import com.ironhack.ironbank.DTO.CheckingDTO;
+import com.ironhack.ironbank.DTO.*;
 import com.ironhack.ironbank.config.KeycloakProvider;
-import com.ironhack.ironbank.DTO.AccountHolderDTO;
-import com.ironhack.ironbank.DTO.AdminDTO;
 import com.ironhack.ironbank.helpclasses.Money;
-import com.ironhack.ironbank.model.Checking;
-import com.ironhack.ironbank.model.StudentChecking;
+import com.ironhack.ironbank.model.*;
 import com.ironhack.ironbank.repository.AdminRepository;
 import com.ironhack.ironbank.helpclasses.RealmGroup;
-import com.ironhack.ironbank.model.AccountHolder;
-import com.ironhack.ironbank.model.Admin;
+import lombok.Getter;
 import lombok.extern.java.Log;
 import org.apache.http.HttpStatus;
 import org.keycloak.admin.client.resource.UsersResource;
@@ -28,7 +24,7 @@ import java.time.Period;
 import java.util.Collections;
 import java.util.List;
 
-
+@Getter
 @Service
 @Log
 public class AdminService {
@@ -246,13 +242,20 @@ public class AdminService {
     //--------------------------------------------------------------
 
 
+    /**
+     * Creates a new Checking account or a new Student Checking account depending on the
+     * user's age. Once created it returns a response and a message with the objects .toString().
+     * @param account: CheckingDTO
+     * @return
+     */
     public ResponseEntity<String> createChecking(CheckingDTO account) {
         AccountHolder owner;
         AccountHolder secondaryOwner = null;
-        BigDecimal balance = new BigDecimal(account.getBalance());
-        Money accountBalance;
+        Money accountBalance = new Money (new BigDecimal(account.getBalance()));
 
-        // First check that the user exists
+
+        // CHECK FOR PRIMARY OWNER
+        // -------------------------------------------------------------------------------------------
         if (accountHolderService.getById(account.getPrimaryOwnerId()) == null) {
             return ResponseEntity
                     .status(org.springframework.http.HttpStatus.NOT_FOUND)
@@ -260,46 +263,173 @@ public class AdminService {
         } else {
             owner = AccountHolder.fromDTO(accountHolderService.getById(account.getPrimaryOwnerId()));
         }
+        // -------------------------------------------------------------------------------------------
 
-        // then look if there is a secondary owner available
+
+        // CHECK FOR SECONDARY OWNER
+        // -------------------------------------------------------------------------------------------
         if (accountHolderService.getById(account.getSecondaryOwnerId()) == null) {
             log.info("No secondary owner provided");
         } else {
             secondaryOwner = AccountHolder.fromDTO(accountHolderService.getById(account.getSecondaryOwnerId()));
         }
 
-        // check if the age is right for a student account
-        if (validateAgeForStudent(owner.getDateOfBirth())) {
-            accountBalance = new Money(balance);
-            StudentChecking newAccount = StudentChecking.createAccount(owner, accountBalance);
 
-            if (secondaryOwner != null) {
-                newAccount.setSecondaryOwner(secondaryOwner);
-            }
+        // CHECK FOR STUDENT ACCOUNT POSSIBILITY
+        // -------------------------------------------------------------------------------------------
+        if (validateAgeForStudent(owner.getDateOfBirth())) {
+            StudentChecking newAccount = StudentChecking.createAccount(owner, accountBalance);
+            newAccount.setSecondaryOwner(secondaryOwner);
 
             return ResponseEntity.ok("new Account Create: \n" + studentCheckingService.add(newAccount).toString());
 
-            // if not, then create a normal checking account
-            // first we check that there is enough balance
-        } else if (balance.compareTo(Checking.MINIMUM_BALANCE) < 0) {
+        } else if (accountBalance.getAmount().compareTo(Checking.MINIMUM_BALANCE) < 0) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_IMPLEMENTED).body("Balance is not enough. The minimum Balance is 250,-€");
 
-            // if everything is fine we create a checking account.
-        } else if (balance.compareTo(Checking.MINIMUM_BALANCE) > 0) {
-            accountBalance = new Money(balance);
+        } else if (accountBalance.getAmount().compareTo(Checking.MINIMUM_BALANCE) > 0) {
             Checking newAccount = Checking.createAccount(owner, accountBalance);
-
-            if (secondaryOwner != null) {
-                newAccount.setSecondaryOwner(secondaryOwner);
-            }
+            newAccount.setSecondaryOwner(secondaryOwner);
 
             return ResponseEntity.ok("new Account Created: \n" + checkingService.add(newAccount).toString());
-
         } else {
+
             return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_IMPLEMENTED).body("Account was not created");
         }
     }
 
+
+    /**
+     * Creates a new Credit Account.
+     * Once created it returns a response and a message with the objects .toString().
+     * @param account: CreditDTO
+     * @return
+     */
+    public ResponseEntity<String> createCredit(CreditDTO account) {
+
+        AccountHolder owner;
+        AccountHolder secondaryOwner = null;
+        Money balance = new Money (new BigDecimal(account.getBalance()));
+        BigDecimal creditLimit;
+        BigDecimal interestRate;
+
+
+        // CHECK FOR PRIMARY OWNER
+        // -------------------------------------------------------------------------------------------
+        if (accountHolderService.getById(account.getPrimaryOwnerId()) == null) {
+            return ResponseEntity
+                    .status(org.springframework.http.HttpStatus.NOT_FOUND)
+                    .body("Owner not Found");
+        } else {
+            owner = AccountHolder.fromDTO(accountHolderService.getById(account.getPrimaryOwnerId()));
+        }
+        // -------------------------------------------------------------------------------------------
+
+
+        // CHECK FOR SECONDARY OWNER
+        // -------------------------------------------------------------------------------------------
+        if (accountHolderService.getById(account.getSecondaryOwnerId()) == null) {
+            log.info("No secondary owner provided");
+        } else {
+            secondaryOwner = AccountHolder.fromDTO(accountHolderService.getById(account.getSecondaryOwnerId()));
+        }
+        // -------------------------------------------------------------------------------------------
+
+
+        // CHECK FOR RIGHT CREDIT LIMIT
+        // -------------------------------------------------------------------------------------------
+        if (account.getCreditLimit() == null ) {
+            creditLimit = CreditAccount.DEFAULT_CREDIT_LIMIT;
+        } else if (account.getCreditLimit().isEmpty()) {
+            creditLimit = CreditAccount.DEFAULT_CREDIT_LIMIT;
+        }else{
+            creditLimit = new BigDecimal(account.getCreditLimit());
+        }
+        // -------------------------------------------------------------------------------------------
+
+
+        // CHECK FOR RIGHT INTEREST RATE
+        // -------------------------------------------------------------------------------------------
+        if (account.getInterestRate() == null ) {
+            interestRate = CreditAccount.DEFAULT_INTEREST_RATE;
+        }else if (account.getInterestRate().isEmpty()){
+            interestRate = CreditAccount.DEFAULT_INTEREST_RATE;
+        } else if (new BigDecimal(account.getInterestRate()).compareTo(CreditAccount.MIN_INTEREST_RATE)<0){
+           interestRate = CreditAccount.DEFAULT_INTEREST_RATE;
+        } else {
+            interestRate = new BigDecimal(account.getInterestRate());
+        }
+        // -------------------------------------------------------------------------------------------
+
+
+        // CREATE SAVE AND RETURN
+        CreditAccount newAccount = CreditAccount.createAccount(owner,secondaryOwner,balance, creditLimit, interestRate);
+        return ResponseEntity.ok("New CREDIT Account Created: \n" + creditAccountService.add(newAccount).toString());
+    }
+
+
+    /**
+     * Creates a new Savings Account.
+     * Once created it returns a response and a message with the objects .toString().
+     * @param account: SavingsDTO
+     * @return
+     */
+    public ResponseEntity<String> createSavings(SavingsDTO account) {
+
+        AccountHolder owner;
+        AccountHolder secondaryOwner = null;
+        Money balance = new Money (new BigDecimal(account.getBalance()));
+        BigDecimal interestRate;
+
+
+        // CHECK FOR PRIMARY OWNER
+        // -------------------------------------------------------------------------------------------
+        if (accountHolderService.getById(account.getPrimaryOwnerId()) == null) {
+            return ResponseEntity
+                    .status(org.springframework.http.HttpStatus.NOT_FOUND)
+                    .body("Owner not Found");
+        } else {
+            owner = AccountHolder.fromDTO(accountHolderService.getById(account.getPrimaryOwnerId()));
+        }
+        // -------------------------------------------------------------------------------------------
+
+
+        // CHECK FOR SECONDARY OWNER
+        // -------------------------------------------------------------------------------------------
+        if (accountHolderService.getById(account.getSecondaryOwnerId()) == null) {
+            log.info("No secondary owner provided");
+        } else {
+            secondaryOwner = AccountHolder.fromDTO(accountHolderService.getById(account.getSecondaryOwnerId()));
+        }
+        // -------------------------------------------------------------------------------------------
+
+
+        // CHECK FOR RIGHT INTEREST RATE
+        // -------------------------------------------------------------------------------------------
+        if (account.getInterestRate() == null ) {
+            interestRate = Savings.DEFAULT_INTEREST_RATE;
+        }else if (account.getInterestRate().isEmpty()){
+            interestRate = Savings.DEFAULT_INTEREST_RATE;
+        } else if (new BigDecimal(account.getInterestRate()).compareTo(Savings.DEFAULT_INTEREST_RATE)<0){
+            interestRate = Savings.DEFAULT_INTEREST_RATE;
+        } else if (new BigDecimal(account.getInterestRate()).compareTo(Savings.MAX_INTEREST_RATE)>0){
+            interestRate = Savings.MAX_INTEREST_RATE;
+        } else {
+            interestRate = new BigDecimal(account.getInterestRate());
+        }
+        // -------------------------------------------------------------------------------------------
+
+
+        // CREATE SAVE AND RETURN
+        Savings newAccount = Savings.createAccount(owner,secondaryOwner,balance,interestRate);
+        return ResponseEntity.ok("New SAVINGS Account Created: \n" + savingsService.add(newAccount).toString());
+    }
+
+
+    /**
+     * A Method to determine User's Age
+     * @param date: LocalDate
+     * @return
+     */
     Boolean validateAgeForStudent(LocalDate date) {
         LocalDate currentDate = LocalDate.now();
         return Period.between(date, currentDate).getYears() >= 24;
@@ -307,6 +437,10 @@ public class AdminService {
 
 
 
+
+    /**
+     * WARNING!! DELETES ALL USERS FROM KEYCLOAK
+     */
     public void deleteUsers (){
 
         var userList = kcProvider.getInstance().realm(realm).users().list();

@@ -1,10 +1,9 @@
 package com.ironhack.ironbank.controller;
 
 
-import com.ironhack.ironbank.DTO.CheckingDTO;
-import com.ironhack.ironbank.DTO.AccountHolderDTO;
-import com.ironhack.ironbank.DTO.AdminDTO;
+import com.ironhack.ironbank.DTO.*;
 import com.ironhack.ironbank.model.AccountHolder;
+import com.ironhack.ironbank.model.Savings;
 import com.ironhack.ironbank.service.AdminService;
 import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
@@ -71,15 +70,20 @@ public class AdminController {
     //            -------       ACCOUNTS       -------
     //**************************************************************
 
-    @PostMapping(value = "/create/account/checking")
+    @PostMapping(value = "/create/checking")
     public ResponseEntity<String> createCheckingAccount(@RequestBody CheckingDTO account) {
        return adminService.createChecking(account);
     }
 
+    @PostMapping(value = "/create/creditaccount")
+    public ResponseEntity<String> createCreditAccount(@RequestBody CreditDTO account) {
+        return adminService.createCredit(account);
+    }
 
-    // todo: create account credit
-    // todo: create account savings
-
+    @PostMapping(value = "/create/savings")
+    public ResponseEntity<String> createSavingsAccount(@RequestBody SavingsDTO account) {
+        return adminService.createSavings(account);
+    }
 
 
 }

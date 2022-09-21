@@ -18,13 +18,13 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Savings {
 
-    final BigDecimal MINIMUM_BALANCE = new BigDecimal("1000");
+    public final static BigDecimal MINIMUM_BALANCE = new BigDecimal("1000");
 
-    final BigDecimal PENALTY_FEE = new BigDecimal("40");
-    final BigDecimal MONTHLY_MAINTENANCE_FEE = new BigDecimal("0");
+    public final static BigDecimal PENALTY_FEE = new BigDecimal("40");
+    public final static BigDecimal MONTHLY_MAINTENANCE_FEE = new BigDecimal("0");
 
-    final BigDecimal MAX_INTEREST_RATE = new BigDecimal("0.5");
-    final BigDecimal DEFAULT_INTEREST_RATE = new BigDecimal("0.0025");
+    public final static BigDecimal MAX_INTEREST_RATE = new BigDecimal("0.5");
+    public final static BigDecimal DEFAULT_INTEREST_RATE = new BigDecimal("0.0025");
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -47,4 +47,36 @@ public class Savings {
 
     @Enumerated(EnumType.STRING)
     AccountStatus accountStatus;
+
+
+    public Savings(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, BigDecimal interestRate) {
+        this.primaryOwner = primaryOwner;
+        this.secondaryOwner = secondaryOwner;
+        this.balance = balance;
+        this.interestRate = interestRate;
+    }
+
+    public static Savings createAccount (AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, BigDecimal interestRate){
+        Savings newAccount = new Savings(primaryOwner, secondaryOwner,balance,interestRate);
+        newAccount.secretKey = UUID.randomUUID();
+        newAccount.creationDate = Instant.now();
+        newAccount.accountStatus = AccountStatus.OPEN;
+        return newAccount;
+    }
+
+    @Override
+    public String toString() {
+        return "Savings Account - " + "accountID: " + accountID +"\n" +
+                "secretKey: " + secretKey +"\n" +
+                "primaryOwner: \n" +
+                "  Owner ID: "+ primaryOwner.getId() + "\n" +
+                "  Owner Name: "+ primaryOwner.getFirstname() +" "+ primaryOwner.getLastname()+ "\n" +
+                "secondaryOwner: \n" +
+                "  Owner ID: "+ secondaryOwner.getId() + "\n" +
+                "  Owner Name: "+ secondaryOwner.getFirstname() +" "+ secondaryOwner.getLastname()+ "\n" +
+                "balance: " + balance +"\n" +
+                "creationDate: " + creationDate +"\n" +
+                "interestRate: " + interestRate +"\n" +
+                "accountStatus: " + accountStatus;
+    }
 }

@@ -3,11 +3,15 @@ package com.ironhack.ironbank.config;
 
 import com.ironhack.ironbank.DTO.AccountHolderDTO;
 import com.ironhack.ironbank.DTO.AdminDTO;
+import com.ironhack.ironbank.helpclasses.Money;
+import com.ironhack.ironbank.model.AccountHolder;
+import com.ironhack.ironbank.model.Checking;
 import com.ironhack.ironbank.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Configuration
@@ -33,6 +37,9 @@ public class AppConfig {
         adminService.createAccountHolder(user1);
         adminService.createAccountHolder(user2);
         adminService.createAccountHolder(user3);
+
+        Checking checking1 = Checking.createAccount(AccountHolder.fromDTO(user1),new Money(new BigDecimal("300")));
+        adminService.getCheckingService().add(checking1);
 
     }
 }

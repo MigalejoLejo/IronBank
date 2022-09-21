@@ -50,6 +50,7 @@ public class StudentChecking {
 
     public static StudentChecking createAccount(AccountHolder primaryOwner, Money balance){
         StudentChecking newAccount = new StudentChecking(primaryOwner,balance);
+        newAccount.secretKey = UUID.randomUUID();
         newAccount.creationDate = Instant.now();
         newAccount.accountStatus = AccountStatus.OPEN;
         return newAccount;
@@ -57,13 +58,16 @@ public class StudentChecking {
 
     @Override
     public String toString() {
-        return "StudentChecking{" + "accountID=" + accountID +
-                ", secretKey=" + secretKey +
-                ", primaryOwner=" + primaryOwner +
-                ", secondaryOwner=" + secondaryOwner +
-                ", balance=" + balance +
-                ", creationDate=" + creationDate +
-                ", accountStatus=" + accountStatus +
-                '}';
+        return "StudentChecking Account - " + "accountID: " + accountID + "\n"+
+                "secretKey: " + secretKey + "\n"+
+                "primaryOwner: \n" +
+                "  Owner ID: "+ primaryOwner.getId() + "\n" +
+                "  Owner Name: "+ primaryOwner.getFirstname() +" "+ primaryOwner.getLastname()+ "\n" +
+                "secondaryOwner: \n" +
+                "  Owner ID: "+ secondaryOwner.getId() + "\n" +
+                "  Owner Name: "+ secondaryOwner.getFirstname() +" "+ secondaryOwner.getLastname()+ "\n" +
+                "balance: " + balance + "\n"+
+                "creationDate: " + creationDate + "\n"+
+                "accountStatus: " + accountStatus ;
     }
 }
