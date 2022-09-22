@@ -34,14 +34,20 @@ public class Checking{
 
     @ManyToOne
     @JoinTable(
-            name = "account_holder_checking_accounts",
+            name = "account_holder_primary_checkings",
             joinColumns = @JoinColumn(name="account_holder_id"),
-            inverseJoinColumns = @JoinColumn(name= "checking_accounts_accountid")
+            inverseJoinColumns = @JoinColumn(name= "checking_account_id")
     )
     @JsonIgnore
     AccountHolder primaryOwner;
 
     @ManyToOne
+    @JoinTable(
+            name = "account_holder_secondary_checkings",
+            joinColumns = @JoinColumn(name="account_holder_id"),
+            inverseJoinColumns = @JoinColumn(name= "checking_account_id")
+    )
+    @JsonIgnore
     AccountHolder secondaryOwner;
 
     Money balance;

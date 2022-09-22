@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ironhack.ironbank.helpclasses.AccountStatus;
 import com.ironhack.ironbank.helpclasses.Money;
 import lombok.Getter;
@@ -34,9 +35,21 @@ public class Savings {
     UUID secretKey;
 
     @ManyToOne
+    @JoinTable(
+            name = "account_holder_primaary_savings",
+            joinColumns = @JoinColumn(name = "account_holder_id"),
+            inverseJoinColumns = @JoinColumn(name = "savings_id")
+    )
+    @JsonIgnore
     AccountHolder primaryOwner;
 
     @ManyToOne
+    @JoinTable(
+            name = "account_holder_secondary_savings",
+            joinColumns = @JoinColumn(name = "account_holder_id"),
+            inverseJoinColumns = @JoinColumn(name = "savings_id")
+    )
+    @JsonIgnore
     AccountHolder secondaryOwner;
 
     Money balance;
@@ -56,8 +69,8 @@ public class Savings {
         this.interestRate = interestRate;
     }
 
-    public static Savings createAccount (AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, BigDecimal interestRate){
-        Savings newAccount = new Savings(primaryOwner, secondaryOwner,balance,interestRate);
+    public static Savings createAccount(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, BigDecimal interestRate) {
+        Savings newAccount = new Savings(primaryOwner, secondaryOwner, balance, interestRate);
         newAccount.secretKey = UUID.randomUUID();
         newAccount.creationDate = Instant.now();
         newAccount.accountStatus = AccountStatus.OPEN;
@@ -66,17 +79,17 @@ public class Savings {
 
     @Override
     public String toString() {
-        return "Savings Account - " + "accountID: " + accountID +"\n" +
-                "secretKey: " + secretKey +"\n" +
+        return "Savings Account - " + "accountID: " + accountID + "\n" +
+                "secretKey: " + secretKey + "\n" +
                 "primaryOwner: \n" +
-                "  Owner ID: "+ primaryOwner.getId() + "\n" +
-                "  Owner Name: "+ primaryOwner.getFirstname() +" "+ primaryOwner.getLastname()+ "\n" +
+                "  Owner ID: " + primaryOwner.getId() + "\n" +
+                "  Owner Name: " + primaryOwner.getFirstname() + " " + primaryOwner.getLastname() + "\n" +
                 "secondaryOwner: \n" +
-                "  Owner ID: "+ secondaryOwner.getId() + "\n" +
-                "  Owner Name: "+ secondaryOwner.getFirstname() +" "+ secondaryOwner.getLastname()+ "\n" +
-                "balance: " + balance +"\n" +
-                "creationDate: " + creationDate +"\n" +
-                "interestRate: " + interestRate +"\n" +
+                "  Owner ID: " + secondaryOwner.getId() + "\n" +
+                "  Owner Name: " + secondaryOwner.getFirstname() + " " + secondaryOwner.getLastname() + "\n" +
+                "balance: " + balance + "\n" +
+                "creationDate: " + creationDate + "\n" +
+                "interestRate: " + interestRate + "\n" +
                 "accountStatus: " + accountStatus;
     }
 }

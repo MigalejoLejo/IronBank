@@ -1,6 +1,5 @@
 package com.ironhack.ironbank.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ironhack.ironbank.DTO.AccountHolderDTO;
 import com.ironhack.ironbank.helpclasses.Address;
 import lombok.AllArgsConstructor;
@@ -31,16 +30,28 @@ public class AccountHolder{
     Address address;
 
     @OneToMany(mappedBy = "primaryOwner")
-    List<Checking> checkingAccounts;
+    List<Checking> primaryCheckings;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    List<StudentChecking> studentCheckingAccounts;
+    @OneToMany(mappedBy = "secondaryOwner")
+    List<Checking> secondaryCheckings;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    List<CreditAccount> creditAccounts;
+    @OneToMany(mappedBy = "primaryOwner")
+    List<StudentChecking> primaryStudentCheckings;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    List<Savings> savingsAccounts;
+    @OneToMany(mappedBy = "secondaryOwner")
+    List<StudentChecking> secondaryStudentCheckings;
+
+    @OneToMany(mappedBy = "primaryOwner")
+    List<CreditAccount> primaryCreditAccounts;
+
+    @OneToMany(mappedBy = "secondaryOwner")
+    List<CreditAccount> secondaryCreditAccounts;
+
+    @OneToMany(mappedBy = "primaryOwner")
+    List<Savings> primarySavings;
+
+    @OneToMany(mappedBy = "secondaryOwner")
+    List<Savings> secondarySavings;
 
 
     public AccountHolder(String id, String username, String email, String password, String firstname, String lastname, LocalDate dateOfBirth, Address address) {

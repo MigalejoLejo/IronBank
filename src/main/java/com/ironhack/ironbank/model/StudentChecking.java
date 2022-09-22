@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ironhack.ironbank.helpclasses.AccountStatus;
 import com.ironhack.ironbank.helpclasses.Money;
 import lombok.Getter;
@@ -30,9 +31,21 @@ public class StudentChecking {
     UUID secretKey;
 
     @ManyToOne
+    @JoinTable(
+            name = "account_holder_primaary_student_checkings",
+            joinColumns = @JoinColumn(name="account_holder_id"),
+            inverseJoinColumns = @JoinColumn(name= "student_checking_id")
+    )
+    @JsonIgnore
     AccountHolder primaryOwner;
 
     @ManyToOne
+    @JoinTable(
+            name = "account_holder_secondary_student_checkings",
+            joinColumns = @JoinColumn(name="account_holder_id"),
+            inverseJoinColumns = @JoinColumn(name= "student_checking_id")
+    )
+    @JsonIgnore
     AccountHolder secondaryOwner;
 
     Money balance;
