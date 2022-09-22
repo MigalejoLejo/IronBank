@@ -2,6 +2,7 @@ package com.ironhack.ironbank.controller;
 
 
 import com.ironhack.ironbank.config.KeycloakProvider;
+import com.ironhack.ironbank.model.AccountHolder;
 import com.ironhack.ironbank.service.AccountHolderService;
 import com.ironhack.ironbank.DTO.AccountHolderDTO;
 import lombok.extern.java.Log;
@@ -29,7 +30,7 @@ public class AccountHolderController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<AccountHolderDTO> getByUsername(Principal principal) {
+    public ResponseEntity<AccountHolder> getByUsername(Principal principal) {
         //todo: accounts should be visible too
         return ResponseEntity.ok(accountHolderService.getByUsername(principal.getName()));
     }

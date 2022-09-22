@@ -1,11 +1,13 @@
 package com.ironhack.ironbank.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ironhack.ironbank.helpclasses.AccountStatus;
 import com.ironhack.ironbank.helpclasses.Money;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.java.Log;
+import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -31,6 +33,12 @@ public class Checking{
     UUID secretKey;
 
     @ManyToOne
+    @JoinTable(
+            name = "account_holder_checking_accounts",
+            joinColumns = @JoinColumn(name="account_holder_id"),
+            inverseJoinColumns = @JoinColumn(name= "checking_accounts_accountid")
+    )
+    @JsonIgnore
     AccountHolder primaryOwner;
 
     @ManyToOne

@@ -216,12 +216,8 @@ public class AdminService {
         return adminDTO;
     }
 
-    public AccountHolderDTO getAccountHolderByUsername(String username) {
-        AccountHolderDTO accountHolderDTO = null;
-        if (accountHolderService.getByUsername(username) != null) {
-            accountHolderDTO = accountHolderService.getByUsername(username);
-        }
-        return accountHolderDTO;
+    public AccountHolder getAccountHolderByUsername(String username) {
+        return accountHolderService.getByUsername(username);
     }
 
     public AccountHolderDTO getAccountHolderById(String id) {

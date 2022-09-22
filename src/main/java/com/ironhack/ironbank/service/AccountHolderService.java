@@ -18,12 +18,12 @@ public class AccountHolderService {
 
     // METHODS AND LOGIC:
     // **************************************************************************
-    public AccountHolderDTO getByUsername(String username) {
-        AccountHolderDTO accountHolderDTO = null;
+    public AccountHolder getByUsername(String username) {
+        AccountHolder accountHolder = null;
         if (accountHolderRepo.findByUsername(username) != null){
-            accountHolderDTO = AccountHolderDTO.fromEntity(accountHolderRepo.findByUsername(username));
+            accountHolder = accountHolderRepo.findByUsername(username);
         }
-        return accountHolderDTO;
+        return accountHolder;
     }
 
     public AccountHolderDTO getById(String id) {

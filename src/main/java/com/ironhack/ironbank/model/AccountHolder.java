@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ironhack.ironbank.DTO.AccountHolderDTO;
 import com.ironhack.ironbank.helpclasses.Address;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,7 @@ public class AccountHolder{
     @Embedded
     Address address;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "primaryOwner")
     List<Checking> checkingAccounts;
 
     @OneToMany(fetch = FetchType.LAZY)
