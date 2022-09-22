@@ -10,7 +10,7 @@ import lombok.Setter;
 import javax.persistence.*;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -54,7 +54,7 @@ public class Savings {
 
     Money balance;
 
-    Instant creationDate;
+    LocalDate creationDate;
 
     BigDecimal interestRate;
 
@@ -72,7 +72,7 @@ public class Savings {
     public static Savings createAccount(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, BigDecimal interestRate) {
         Savings newAccount = new Savings(primaryOwner, secondaryOwner, balance, interestRate);
         newAccount.secretKey = UUID.randomUUID();
-        newAccount.creationDate = Instant.now();
+        newAccount.creationDate = LocalDate.now();
         newAccount.accountStatus = AccountStatus.OPEN;
         return newAccount;
     }

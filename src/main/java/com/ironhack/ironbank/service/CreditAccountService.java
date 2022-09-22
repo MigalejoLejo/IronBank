@@ -11,8 +11,12 @@ import java.util.UUID;
 @Service
 public class CreditAccountService {
 
-    @Autowired
+    final
     CreditAccountRepository creditAccountRepository;
+
+    public CreditAccountService(CreditAccountRepository creditAccountRepository) {
+        this.creditAccountRepository = creditAccountRepository;
+    }
 
     public CreditAccount findById (String id) {
         return creditAccountRepository.findById(UUID.fromString(id)).orElseThrow();

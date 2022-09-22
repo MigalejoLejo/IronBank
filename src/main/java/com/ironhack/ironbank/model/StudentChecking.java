@@ -11,6 +11,7 @@ import javax.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -50,21 +51,22 @@ public class StudentChecking {
 
     Money balance;
 
-    Instant creationDate;
+    LocalDate creationDate;
 
     @Enumerated(EnumType.STRING)
     AccountStatus accountStatus;
 
-    public StudentChecking(AccountHolder primaryOwner,Money balance) {
+    public StudentChecking(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance) {
         this.primaryOwner = primaryOwner;
+        this.secondaryOwner = secondaryOwner;
         this.balance = balance;
     }
 
 
-    public static StudentChecking createAccount(AccountHolder primaryOwner, Money balance){
-        StudentChecking newAccount = new StudentChecking(primaryOwner,balance);
+    public static StudentChecking createAccount(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance){
+        StudentChecking newAccount = new StudentChecking(primaryOwner,secondaryOwner, balance);
         newAccount.secretKey = UUID.randomUUID();
-        newAccount.creationDate = Instant.now();
+        newAccount.creationDate = LocalDate.now();
         newAccount.accountStatus = AccountStatus.OPEN;
         return newAccount;
     }

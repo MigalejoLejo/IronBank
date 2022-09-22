@@ -16,9 +16,6 @@ public class StudentCheckingService {
         this.studentCheckingRepository = studentCheckingRepository;
     }
 
-    // METHODS AND LOGIC:
-    // **************************************************************************
-
     public StudentChecking findById (String id) {
         return studentCheckingRepository.findById(UUID.fromString(id)).orElseThrow();
     }

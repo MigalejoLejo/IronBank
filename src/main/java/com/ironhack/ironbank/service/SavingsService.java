@@ -16,9 +16,6 @@ public class SavingsService {
         this.savingsRepository = savingsRepository;
     }
 
-    // METHODS AND LOGIC:
-    // **************************************************************************
-
     public Savings findById (String id){
        return savingsRepository.findById(UUID.fromString(id)).orElseThrow();
     }

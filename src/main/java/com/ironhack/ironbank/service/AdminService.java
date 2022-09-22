@@ -220,13 +220,11 @@ public class AdminService {
         return accountHolderService.getByUsername(username);
     }
 
-    public AccountHolderDTO getAccountHolderById(String id) {
-        AccountHolderDTO accountHolderDTO = null;
-        if (accountHolderService.getById(id) != null) {
-            accountHolderDTO = accountHolderService.getById(id);
-        }
-        return accountHolderDTO;
+    public AccountHolder getAccountHolderById(String id) {
+       return accountHolderService.getById(id);
+
     }
+
 
 
     //**************************************************************
@@ -237,12 +235,10 @@ public class AdminService {
     // CREATE ACCOUNTS
     //--------------------------------------------------------------
 
-
     /**
      * Creates a new Checking account or a new Student Checking account depending on the
      * user's age. Once created it returns a response and a message with the objects .toString().
      * @param account: CheckingDTO
-     * @return
      */
     public ResponseEntity<String> createChecking(CheckingDTO account) {
         AccountHolder owner;
@@ -257,7 +253,7 @@ public class AdminService {
                     .status(org.springframework.http.HttpStatus.NOT_FOUND)
                     .body("Owner not Found");
         } else {
-            owner = AccountHolder.fromDTO(accountHolderService.getById(account.getPrimaryOwnerId()));
+            owner = accountHolderService.getById(account.getPrimaryOwnerId());
         }
         // -------------------------------------------------------------------------------------------
 
@@ -267,28 +263,23 @@ public class AdminService {
         if (accountHolderService.getById(account.getSecondaryOwnerId()) == null) {
             log.info("No secondary owner provided");
         } else {
-            secondaryOwner = AccountHolder.fromDTO(accountHolderService.getById(account.getSecondaryOwnerId()));
+            secondaryOwner = accountHolderService.getById(account.getSecondaryOwnerId());
         }
 
 
         // CHECK FOR STUDENT ACCOUNT POSSIBILITY
         // -------------------------------------------------------------------------------------------
         if (validateAgeForStudent(owner.getDateOfBirth())) {
-            StudentChecking newAccount = StudentChecking.createAccount(owner, accountBalance);
-            newAccount.setSecondaryOwner(secondaryOwner);
-
+            StudentChecking newAccount = StudentChecking.createAccount(owner, secondaryOwner, accountBalance);
             return ResponseEntity.ok("new Account Create: \n" + studentCheckingService.add(newAccount).toString());
 
         } else if (accountBalance.getAmount().compareTo(Checking.MINIMUM_BALANCE) < 0) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_IMPLEMENTED).body("Balance is not enough. The minimum Balance is 250,-€");
 
         } else if (accountBalance.getAmount().compareTo(Checking.MINIMUM_BALANCE) > 0) {
-            Checking newAccount = Checking.createAccount(owner, accountBalance);
-            newAccount.setSecondaryOwner(secondaryOwner);
-
+            Checking newAccount = Checking.createAccount(owner, secondaryOwner, accountBalance);
             return ResponseEntity.ok("new Account Created: \n" + checkingService.add(newAccount).toString());
         } else {
-
             return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_IMPLEMENTED).body("Account was not created");
         }
     }
@@ -298,7 +289,6 @@ public class AdminService {
      * Creates a new Credit Account.
      * Once created it returns a response and a message with the objects .toString().
      * @param account: CreditDTO
-     * @return
      */
     public ResponseEntity<String> createCredit(CreditDTO account) {
 
@@ -316,7 +306,7 @@ public class AdminService {
                     .status(org.springframework.http.HttpStatus.NOT_FOUND)
                     .body("Owner not Found");
         } else {
-            owner = AccountHolder.fromDTO(accountHolderService.getById(account.getPrimaryOwnerId()));
+            owner = accountHolderService.getById(account.getPrimaryOwnerId());
         }
         // -------------------------------------------------------------------------------------------
 
@@ -326,7 +316,7 @@ public class AdminService {
         if (accountHolderService.getById(account.getSecondaryOwnerId()) == null) {
             log.info("No secondary owner provided");
         } else {
-            secondaryOwner = AccountHolder.fromDTO(accountHolderService.getById(account.getSecondaryOwnerId()));
+            secondaryOwner = accountHolderService.getById(account.getSecondaryOwnerId());
         }
         // -------------------------------------------------------------------------------------------
 
@@ -367,7 +357,6 @@ public class AdminService {
      * Creates a new Savings Account.
      * Once created it returns a response and a message with the objects .toString().
      * @param account: SavingsDTO
-     * @return
      */
     public ResponseEntity<String> createSavings(SavingsDTO account) {
 
@@ -384,7 +373,7 @@ public class AdminService {
                     .status(org.springframework.http.HttpStatus.NOT_FOUND)
                     .body("Owner not Found");
         } else {
-            owner = AccountHolder.fromDTO(accountHolderService.getById(account.getPrimaryOwnerId()));
+            owner = accountHolderService.getById(account.getPrimaryOwnerId());
         }
         // -------------------------------------------------------------------------------------------
 
@@ -394,7 +383,7 @@ public class AdminService {
         if (accountHolderService.getById(account.getSecondaryOwnerId()) == null) {
             log.info("No secondary owner provided");
         } else {
-            secondaryOwner = AccountHolder.fromDTO(accountHolderService.getById(account.getSecondaryOwnerId()));
+            secondaryOwner = accountHolderService.getById(account.getSecondaryOwnerId());
         }
         // -------------------------------------------------------------------------------------------
 
@@ -421,14 +410,18 @@ public class AdminService {
     }
 
 
+
+
+
+
+
     /**
      * A Method to determine User's Age
      * @param date: LocalDate
-     * @return
      */
     Boolean validateAgeForStudent(LocalDate date) {
         LocalDate currentDate = LocalDate.now();
-        return Period.between(date, currentDate).getYears() >= 24;
+        return Period.between(date, currentDate).getYears() <= 24;
     }
 
 

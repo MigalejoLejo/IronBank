@@ -7,11 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.java.Log;
-import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -52,20 +51,21 @@ public class Checking{
 
     Money balance;
 
-    Instant creationDate;
+    LocalDate creationDate;
 
     @Enumerated(EnumType.STRING)
     AccountStatus accountStatus;
 
-    public Checking(AccountHolder primaryOwner, Money balance) {
+    public Checking(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance) {
         this.primaryOwner = primaryOwner;
+        this.secondaryOwner = secondaryOwner;
         this.balance = balance;
     }
 
-    public static Checking createAccount(AccountHolder primaryOwner, Money balance){
-        Checking newAccount = new Checking(primaryOwner, balance);
+    public static Checking createAccount(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance){
+        Checking newAccount = new Checking(primaryOwner, secondaryOwner, balance);
         newAccount.secretKey = UUID.randomUUID();
-        newAccount.creationDate = Instant.now();
+        newAccount.creationDate = LocalDate.now();
         newAccount.accountStatus = AccountStatus.OPEN;
         return newAccount;
     }

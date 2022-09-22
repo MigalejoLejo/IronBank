@@ -1,6 +1,6 @@
 package com.ironhack.ironbank.service;
 
-import com.ironhack.ironbank.DTO.AccountHolderDTO;
+import com.ironhack.ironbank.DTO.AccountsDTO;
 import com.ironhack.ironbank.model.AccountHolder;
 import com.ironhack.ironbank.repository.AccountHolderRepository;
 import org.springframework.stereotype.Service;
@@ -16,8 +16,6 @@ public class AccountHolderService {
     }
 
 
-    // METHODS AND LOGIC:
-    // **************************************************************************
     public AccountHolder getByUsername(String username) {
         AccountHolder accountHolder = null;
         if (accountHolderRepo.findByUsername(username) != null){
@@ -26,11 +24,11 @@ public class AccountHolderService {
         return accountHolder;
     }
 
-    public AccountHolderDTO getById(String id) {
+    public AccountHolder getById(String id) {
         if (id == null || accountHolderRepo.findById(id).isEmpty()){
             return null;
         } else {
-            return AccountHolderDTO.fromEntity(accountHolderRepo.findById(id).get());
+            return accountHolderRepo.findById(id).get();
         }
     }
 
@@ -39,5 +37,8 @@ public class AccountHolderService {
     }
 
 
-
+    public AccountsDTO getAccounts(String id) {
+        var user = accountHolderRepo.findById(id).orElseThrow();
+         return AccountsDTO.fromAccountHolder(user);
+    }
 }

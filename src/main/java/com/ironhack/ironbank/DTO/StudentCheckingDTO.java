@@ -2,7 +2,7 @@ package com.ironhack.ironbank.DTO;
 
 import com.ironhack.ironbank.helpclasses.AccountStatus;
 import com.ironhack.ironbank.model.Checking;
-import com.ironhack.ironbank.model.Savings;
+import com.ironhack.ironbank.model.StudentChecking;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
-public class SavingsDTO {
+public class StudentCheckingDTO {
+
     UUID accountID;
     UUID secretKey;
 
@@ -21,21 +22,21 @@ public class SavingsDTO {
     String secondaryOwnerId;
 
     String balance;
-    String interestRate;
-
     LocalDate creationDate;
+
     AccountStatus accountStatus;
 
-    public static SavingsDTO fromEntity (Savings account){
-        return new SavingsDTO(
+
+    public static StudentCheckingDTO fromEntity (StudentChecking account){
+        return new StudentCheckingDTO(
                 account.getAccountID(),
                 account.getSecretKey(),
                 account.getPrimaryOwner().getId(),
                 account.getSecondaryOwner() == null? account.getSecondaryOwner().getId():null,
                 account.getBalance().getAmount().toString(),
-                account.getInterestRate().toString(),
                 account.getCreationDate(),
                 account.getAccountStatus()
         );
     }
+
 }
