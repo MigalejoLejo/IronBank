@@ -36,7 +36,7 @@ public class CreditAccount{
 
     @ManyToOne
     @JoinTable(
-            name = "account_holder_primaary_credit_accounts",
+            name = "account_holder_primary_credit_accounts",
             joinColumns = @JoinColumn(name="account_holder_id"),
             inverseJoinColumns = @JoinColumn(name= "credit_account_id")
     )
@@ -85,14 +85,21 @@ public class CreditAccount{
 
     @Override
     public String toString() {
+        String secondaryToString;
+        if (secondaryOwner != null){
+            secondaryToString =
+                    "secondaryOwner: \n" +
+                            "  Owner ID: "+ secondaryOwner.getId() + "\n" +
+                            "  Owner Name: "+ secondaryOwner.getFirstname() +" "+ secondaryOwner.getLastname();
+        } else {
+            secondaryToString = "No Secondary Owner.";
+        }
         return "Credit Account - " + "accountID: " + accountID + "\n"+
                 "secretKey: " + secretKey + "\n"+
                 "primaryOwner: \n" +
                 "  Owner ID: "+ primaryOwner.getId() + "\n" +
                 "  Owner Name: "+ primaryOwner.getFirstname() +" "+ primaryOwner.getLastname()+ "\n" +
-                "secondaryOwner: \n" +
-                "  Owner ID: "+ secondaryOwner.getId() + "\n" +
-                "  Owner Name: "+ secondaryOwner.getFirstname() +" "+ secondaryOwner.getLastname()+ "\n" +
+                secondaryToString + "\n"+
                 "balance: " + balance + "\n"+
                 "creationDate: " + creationDate + "\n"+
                 "creditLimit: " + creditLimit + "\n"+

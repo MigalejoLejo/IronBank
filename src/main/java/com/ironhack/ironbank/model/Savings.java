@@ -36,7 +36,7 @@ public class Savings {
 
     @ManyToOne
     @JoinTable(
-            name = "account_holder_primaary_savings",
+            name = "account_holder_primary_savings",
             joinColumns = @JoinColumn(name = "account_holder_id"),
             inverseJoinColumns = @JoinColumn(name = "savings_id")
     )
@@ -79,14 +79,22 @@ public class Savings {
 
     @Override
     public String toString() {
+        String secondaryToString;
+        if (secondaryOwner != null){
+            secondaryToString =
+                    "secondaryOwner: \n" +
+                            "  Owner ID: "+ secondaryOwner.getId() + "\n" +
+                            "  Owner Name: "+ secondaryOwner.getFirstname() +" "+ secondaryOwner.getLastname();
+        } else {
+            secondaryToString = "No Secondary Owner.";
+        }
+
         return "Savings Account - " + "accountID: " + accountID + "\n" +
                 "secretKey: " + secretKey + "\n" +
                 "primaryOwner: \n" +
                 "  Owner ID: " + primaryOwner.getId() + "\n" +
                 "  Owner Name: " + primaryOwner.getFirstname() + " " + primaryOwner.getLastname() + "\n" +
-                "secondaryOwner: \n" +
-                "  Owner ID: " + secondaryOwner.getId() + "\n" +
-                "  Owner Name: " + secondaryOwner.getFirstname() + " " + secondaryOwner.getLastname() + "\n" +
+                secondaryToString + "\n" +
                 "balance: " + balance + "\n" +
                 "creationDate: " + creationDate + "\n" +
                 "interestRate: " + interestRate + "\n" +

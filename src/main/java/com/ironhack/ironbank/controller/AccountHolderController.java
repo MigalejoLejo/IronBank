@@ -42,6 +42,13 @@ public class AccountHolderController {
         return ResponseEntity.ok(accountHolderService.getAccounts(userId));
     }
 
+    @GetMapping("/account/{accountId}")
+    public ResponseEntity<String> getCheckings(@PathVariable String accountId, Principal principal) {
+        var userId = accountHolderService.getByUsername(principal.getName()).getId();
+        //todo: accounts should be visible too
+        return accountHolderService.getAccountById(userId, accountId);
+    }
+
 
 
 }

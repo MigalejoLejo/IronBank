@@ -73,14 +73,22 @@ public class Checking{
 
     @Override
     public String toString() {
+        String secondaryToString;
+        if (secondaryOwner != null){
+            secondaryToString =
+                    "secondaryOwner: \n" +
+                    "  Owner ID: "+ secondaryOwner.getId() + "\n" +
+                    "  Owner Name: "+ secondaryOwner.getFirstname() +" "+ secondaryOwner.getLastname();
+        } else {
+            secondaryToString = "No Secondary Owner.";
+        }
+
         return "Checking Account - " + "accountID: " + accountID + "\n"+
                 "secretKey: " + secretKey + "\n"+
                 "primaryOwner: \n" +
                 "  Owner ID: "+ primaryOwner.getId() + "\n" +
                 "  Owner Name: "+ primaryOwner.getFirstname() +" "+ primaryOwner.getLastname()+ "\n" +
-                "secondaryOwner: \n" +
-                "  Owner ID: "+ secondaryOwner.getId() + "\n" +
-                "  Owner Name: "+ secondaryOwner.getFirstname() +" "+ secondaryOwner.getLastname()+ "\n" +
+                secondaryToString +"\n" +
                 "balance: " + balance + "\n"+
                 "creationDate: " + creationDate + "\n"+
                 "accountStatus: " + accountStatus ;
