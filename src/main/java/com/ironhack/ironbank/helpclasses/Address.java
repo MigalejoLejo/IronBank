@@ -1,4 +1,4 @@
-package com.ironhack.ironbank.model;
+package com.ironhack.ironbank.helpclasses;
 
 
 import lombok.AllArgsConstructor;
@@ -21,6 +21,4 @@ public class Address {
     String postalCode;
     String city;
     String land;
-
-
 }
