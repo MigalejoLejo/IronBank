@@ -1,6 +1,7 @@
 package com.ironhack.ironbank.service;
 
 
+import com.ironhack.ironbank.DTO.AccountsDTO;
 import com.ironhack.ironbank.DTO.TransactionDTO;
 import com.ironhack.ironbank.helpclasses.Money;
 import com.ironhack.ironbank.helpclasses.TypeOfAccount;
@@ -52,78 +53,63 @@ public class TransactionService {
 
     public ResponseEntity<String> makeATransaction (TransactionDTO transactionDTO){
 
-        Transaction logForOrigin = Transaction.createOutgoingTransactionFromDTO(transactionDTO);
-        Transaction logForDestination = Transaction.createIncomingTransactionFromDTO(transactionDTO);
 
-        TypeOfAccount originAccount = determineTypeOfAccount(UUID.fromString(transactionDTO.getOriginID()));
-        TypeOfAccount destinationAccount = determineTypeOfAccount(UUID.fromString(transactionDTO.getDestinationID()));
+        Transaction logForOrigin = Transaction.createOutgoingTransactionFromDTO(transactionDTO);
+        log.info("logForOrigin created");
+
+        Transaction logForDestination = Transaction.createIncomingTransactionFromDTO(transactionDTO);
+        log.info("logForDestination created");
+
+
+        log.info("type of origin account being determined:");
+        TypeOfAccount originAccount = determineTypeOfAccount(transactionDTO.getOriginID());
+        log.info("type of destination account being determined:");
+        TypeOfAccount destinationAccount = determineTypeOfAccount(transactionDTO.getDestinationID());
 
         boolean transactionCheckForOrigin = false;
         boolean transactionCheckForDestination = false;
 
         switch (originAccount){
             case CHECKING -> {
-                checkingService.decreaseBalance(
-                        UUID.fromString(transactionDTO.getOriginID()),
-                        new Money(new BigDecimal(transactionDTO.getAmount())),
-                        logForOrigin);
+                checkingService.decreaseBalance(transactionDTO);
                 transactionCheckForOrigin = true;
             }
             case STUDENT_CHECKING -> {
-                studentCheckingService.decreaseBalance(
-                        UUID.fromString(transactionDTO.getOriginID()),
-                        new Money(new BigDecimal(transactionDTO.getAmount())),
-                        logForOrigin);
+                studentCheckingService.decreaseBalance(transactionDTO);
                 transactionCheckForOrigin = true;
             }
             case CREDIT -> {
-                creditAccountService.decreaseBalance(
-                        UUID.fromString(transactionDTO.getOriginID()),
-                        new Money(new BigDecimal(transactionDTO.getAmount())),
-                        logForOrigin);
+                creditAccountService.decreaseBalance(transactionDTO);
                 transactionCheckForOrigin = true;
             }
             case SAVINGS -> {
-                savingsService.decreaseBalance(
-                        UUID.fromString(transactionDTO.getOriginID()),
-                        new Money(new BigDecimal(transactionDTO.getAmount())),
-                        logForOrigin);
+                savingsService.decreaseBalance(transactionDTO);
                 transactionCheckForOrigin = true;
             }
         }
 
         switch (destinationAccount){
             case CHECKING -> {
-                checkingService.increaseBalance(
-                        UUID.fromString(transactionDTO.getOriginID()),
-                        new Money(new BigDecimal(transactionDTO.getAmount())),
-                        logForDestination);
+                checkingService.increaseBalance(transactionDTO);
                 transactionCheckForDestination = true;
             }
             case STUDENT_CHECKING -> {
-                studentCheckingService.increaseBalance(
-                        UUID.fromString(transactionDTO.getOriginID()),
-                        new Money(new BigDecimal(transactionDTO.getAmount())),
-                        logForDestination);
+                studentCheckingService.increaseBalance(transactionDTO);
                 transactionCheckForDestination = true;
             }
             case CREDIT -> {
-                creditAccountService.increaseBalance(
-                        UUID.fromString(transactionDTO.getOriginID()),
-                        new Money(new BigDecimal(transactionDTO.getAmount())),
-                        logForDestination);
+                creditAccountService.increaseBalance(transactionDTO);
                 transactionCheckForDestination = true;
             }
             case SAVINGS -> {
-                savingsService.increaseBalance(
-                        UUID.fromString(transactionDTO.getOriginID()),
-                        new Money(new BigDecimal(transactionDTO.getAmount())),
-                        logForDestination);
+                savingsService.increaseBalance(transactionDTO);
                 transactionCheckForDestination = true;
             }
         }
 
         if (transactionCheckForOrigin & transactionCheckForDestination){
+            transactionRepository.save(logForOrigin);
+            transactionRepository.save(logForDestination);
             return ResponseEntity.ok("Transaction successful.");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Something went wrong.");
@@ -132,31 +118,11 @@ public class TransactionService {
 
     // --------------------------------------------------------------------------------------------------------
 
-    public TypeOfAccount determineTypeOfAccount (UUID accountID){
 
-        if (checkingService.checkIfExists(accountID)){
-           return TypeOfAccount.CHECKING;
-        }
-
-        if (studentCheckingService.checkIfExists(accountID)){
-          return TypeOfAccount.STUDENT_CHECKING;
-        }
-
-        if (creditAccountService.checkIfExists(accountID)){
-            return TypeOfAccount.CREDIT;
-        }
-
-        if (savingsService.checkIfExists(accountID)){
-            return TypeOfAccount.SAVINGS;
-        }
-
-        return TypeOfAccount.NON_EXISTENT;
-
-    }
 
     public ResponseEntity<String> userMakeTransaction(String userId, TransactionDTO transactionDTO) {
 
-        boolean accountBelongsToUser = checkIfAccountBelongsToUser(transactionDTO.getOriginID(), userId);
+        boolean accountBelongsToUser = checkIfAccountBelongsToUser( userId, transactionDTO.getOriginID());
 
         if (accountBelongsToUser) {
             return makeATransaction(transactionDTO);
@@ -165,75 +131,114 @@ public class TransactionService {
         }
     }
 
-    public boolean checkIfAccountBelongsToUser(String accountId, String userId) {
+    public boolean checkIfAccountBelongsToUser(String userId, String accountId) {
 
-        var accountsFromUser = accountHolderService.getAccounts(userId);
+        AccountsDTO userAccounts = accountHolderService.getAccounts(userId);
 
-        if (accountsFromUser.getPrimaryCheckings() != null) {
-            for (Checking account : accountsFromUser.getPrimaryCheckings()) {
-                if (account.getAccountID().toString().equals(accountId)) {
+        if (userAccounts.getPrimaryCheckings() != null) {
+            for (Checking c : userAccounts.getPrimaryCheckings()) {
+                if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
+                    log.info("account found: \n"+c);
                     return true;
-                } else { log.severe("Not found in P Checkings");}
+                }
             }
         }
 
-        if (accountsFromUser.getPrimaryStudentCheckings() != null) {
-            for (StudentChecking account : accountsFromUser.getPrimaryStudentCheckings()) {
-                if (account.getAccountID().toString().equals(accountId)) {
+        if (userAccounts.getPrimaryStudentCheckings() != null) {
+            for (StudentChecking c : userAccounts.getPrimaryStudentCheckings()) {
+                if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
+                    log.info("account found: \n"+c);
                     return true;
-                } else { log.severe("Not found in P StudentCheckings");}
+                }
             }
         }
 
-        if (accountsFromUser.getPrimaryCreditAccounts() != null) {
-            for (CreditAccount account : accountsFromUser.getPrimaryCreditAccounts()) {
-                if (account.getAccountID().toString().equals(accountId)) {
+        if (userAccounts.getPrimaryCreditAccounts() != null) {
+            for (CreditAccount c : userAccounts.getPrimaryCreditAccounts()) {
+                if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
+                    log.info("account found: \n"+c);
                     return true;
-                } else { log.severe("Not found in p Credits");}
+                }
             }
         }
 
-        if (accountsFromUser.getPrimarySavings() != null) {
-            for (Savings account : accountsFromUser.getPrimarySavings()) {
-                if (account.getAccountID().toString().equals(accountId)) {
+        if (userAccounts.getPrimarySavings() != null) {
+            for (Savings c : userAccounts.getPrimarySavings()) {
+                if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
+                    log.info("account found: \n"+c);
                     return true;
-                } else { log.severe("Not found in P Savings");}
+                }
             }
         }
 
-        if (accountsFromUser.getSecondaryCheckings() != null) {
-            for (Checking account : accountsFromUser.getSecondaryCheckings()) {
-                if (account.getAccountID().toString().equals(accountId)) {
+        if (userAccounts.getSecondaryCheckings() != null) {
+            for (Checking c : userAccounts.getSecondaryCheckings()) {
+                if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
+                    log.info("account found: \n"+c);
                     return true;
-                } else { log.severe("Not found in P Checkings");}
+                }
             }
         }
 
-        if (accountsFromUser.getSecondaryStudentCheckings() != null) {
-            for (StudentChecking account : accountsFromUser.getSecondaryStudentCheckings()) {
-                if (account.getAccountID().toString().equals(accountId)) {
+        if (userAccounts.getSecondaryStudentCheckings() != null) {
+            for (StudentChecking c : userAccounts.getSecondaryStudentCheckings()) {
+                if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
+                    log.info("account found: \n"+c);
                     return true;
-                } else { log.severe("Not found in S StudentCheckings");}
+                }
             }
         }
 
-        if (accountsFromUser.getSecondaryCreditAccounts() != null) {
-            for (CreditAccount account : accountsFromUser.getSecondaryCreditAccounts()) {
-                if (account.getAccountID().toString().equals(accountId)) {
+        if (userAccounts.getSecondaryCreditAccounts() != null) {
+            for (CreditAccount c : userAccounts.getSecondaryCreditAccounts()) {
+                if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
+                    log.info("account found: \n"+c);
                     return true;
-                } else { log.severe("Not found in s Credits");}
+                }
             }
         }
 
-        if (accountsFromUser.getSecondarySavings() != null) {
-            for (Savings account : accountsFromUser.getSecondarySavings()) {
-                if (account.getAccountID().toString().equals(accountId)) {
+        if (userAccounts.getSecondarySavings() != null) {
+            for (Savings c : userAccounts.getSecondarySavings()) {
+                if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
+                    log.info("account found: \n"+c);
                     return true;
-                } else { log.severe("Not found in S Savings");}
-
+                }
             }
         }
+
         return false;
+
+
+    }
+
+    public TypeOfAccount determineTypeOfAccount (String id){
+
+        var accountID = UUID.fromString(id);
+
+        if (checkingService.checkIfExists(accountID)){
+            log.info("type of account determined: checking");
+            return TypeOfAccount.CHECKING;
+        }
+
+        if (studentCheckingService.checkIfExists(accountID)){
+            log.info("type of account determined: student checking");
+            return TypeOfAccount.STUDENT_CHECKING;
+        }
+
+        if (creditAccountService.checkIfExists(accountID)){
+            log.info("type of account determined: credit");
+            return TypeOfAccount.CREDIT;
+        }
+
+        if (savingsService.checkIfExists(accountID)){
+            log.info("type of account determined: savings");
+            return TypeOfAccount.SAVINGS;
+        }
+
+        log.info("type of account determined: non_existent");
+        return TypeOfAccount.NON_EXISTENT;
+
     }
 
 }

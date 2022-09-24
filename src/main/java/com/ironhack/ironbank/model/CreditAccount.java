@@ -6,6 +6,7 @@ import com.ironhack.ironbank.helpclasses.Money;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -30,9 +31,11 @@ public class CreditAccount{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Type(type = "org.hibernate.type.UUIDCharType")
     UUID accountID;
 
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Type(type = "org.hibernate.type.UUIDCharType")
     UUID secretKey;
 
     @ManyToOne

@@ -3,13 +3,16 @@ package com.ironhack.ironbank.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ironhack.ironbank.DTO.TransactionDTO;
+import com.ironhack.ironbank.helpclasses.Money;
 import com.ironhack.ironbank.helpclasses.MovementType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -22,6 +25,7 @@ public class Transaction {
 
     @Id
     @GeneratedValue
+    @Type(type = "org.hibernate.type.UUIDCharType")
     UUID id;
 
     @Enumerated(EnumType.STRING)
@@ -29,48 +33,35 @@ public class Transaction {
 
     String originID;
     String destinationID;
-    String amount;
+    Money amount;
     String reason;
 
     LocalDate creationDate;
 
-//    @ManyToOne
-//    @JoinTable(
-//            name = "checking_transaction_list",
-//            joinColumns = @JoinColumn(name="checking_account_id"),
-//            inverseJoinColumns = @JoinColumn(name= "transaction_list_id")
-//    )
-//    @JsonIgnore
-//    Checking checking;
-
-    public Transaction(MovementType movementType, String originID, String destinationID, String amount, String reason, LocalDate creationDate) {
-        this.movementType = movementType;
-        this.originID = originID;
-        this.destinationID = destinationID;
-        this.reason = reason;
-        this.amount = amount;
-        this.creationDate = creationDate;
-    }
 
     public static Transaction createOutgoingTransactionFromDTO (TransactionDTO transactionDTO){
-       return new Transaction(
-                MovementType.OUTGOING,
-                transactionDTO.getOriginID(),
-                transactionDTO.getDestinationID(),
-                "-"+transactionDTO.getAmount()+"€",
-                transactionDTO.getReason()==null?"": transactionDTO.getReason(),
-                LocalDate.now()
-        );
+        var result = new Transaction();
+
+        result.setId(UUID.randomUUID());
+        result.setMovementType(MovementType.OUTGOING);
+        result.setOriginID(transactionDTO.getOriginID());
+        result.setDestinationID(transactionDTO.getDestinationID());
+        result.setAmount(new Money (new BigDecimal(transactionDTO.getAmount()).multiply(new BigDecimal("-1"))));
+        result.setReason(transactionDTO.getReason());
+        result.setCreationDate(LocalDate.now());
+       return result;
     }
 
     public static Transaction createIncomingTransactionFromDTO (TransactionDTO transactionDTO){
-        return new Transaction(
-                MovementType.INCOMING,
-                transactionDTO.getOriginID(),
-                transactionDTO.getDestinationID(),
-                transactionDTO.getAmount()+"€",
-                transactionDTO.getReason(),
-                LocalDate.now()
-        );
+        var result = new Transaction();
+
+        result.setId(UUID.randomUUID());
+        result.setMovementType(MovementType.INCOMING);
+        result.setOriginID(transactionDTO.getOriginID());
+        result.setDestinationID(transactionDTO.getDestinationID());
+        result.setAmount(new Money (new BigDecimal(transactionDTO.getAmount())));
+        result.setReason(transactionDTO.getReason());
+        result.setCreationDate(LocalDate.now());
+        return result;
     }
 }

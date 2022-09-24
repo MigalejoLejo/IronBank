@@ -6,6 +6,7 @@ import com.ironhack.ironbank.helpclasses.Money;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
@@ -27,9 +28,11 @@ public class StudentChecking {
 
     @Id
     @GeneratedValue
+    @Type(type = "org.hibernate.type.UUIDCharType")
     UUID accountID;
 
     @GeneratedValue
+    @Type(type = "org.hibernate.type.UUIDCharType")
     UUID secretKey;
 
     @ManyToOne
