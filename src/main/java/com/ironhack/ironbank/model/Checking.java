@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.java.Log;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -27,9 +28,11 @@ public class Checking{
 
     @Id
     @GeneratedValue
+    @Type(type = "org.hibernate.type.UUIDCharType")
     UUID accountID;
 
     @GeneratedValue
+    @Type(type = "org.hibernate.type.UUIDCharType")
     UUID secretKey;
 
     @ManyToOne
@@ -57,8 +60,14 @@ public class Checking{
     @Enumerated(EnumType.STRING)
     AccountStatus accountStatus;
 
-//    @OneToMany(mappedBy = "checking")
-//    List<Transaction> transactionList;
+    @OneToMany
+    @JoinTable(
+            name = "checking_transaction_list",
+            joinColumns = @JoinColumn(name="checking_account_id"),
+            inverseJoinColumns = @JoinColumn(name= "transaction_id")
+    )
+    @JsonIgnore
+    List<Transaction> transactionList;
 
 
 
