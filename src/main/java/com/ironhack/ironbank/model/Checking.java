@@ -11,6 +11,7 @@ import lombok.extern.java.Log;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -55,6 +56,11 @@ public class Checking{
 
     @Enumerated(EnumType.STRING)
     AccountStatus accountStatus;
+
+//    @OneToMany(mappedBy = "checking")
+//    List<Transaction> transactionList;
+
+
 
     public Checking(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance) {
         this.primaryOwner = primaryOwner;

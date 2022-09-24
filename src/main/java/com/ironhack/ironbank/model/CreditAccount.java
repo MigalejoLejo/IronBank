@@ -11,6 +11,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -62,6 +63,8 @@ public class CreditAccount{
     @Enumerated(EnumType.STRING)
     AccountStatus accountStatus;
 
+//    @OneToMany
+//    List<Transaction> transactionList;
 
     public CreditAccount(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, BigDecimal creditLimit, BigDecimal interestRate) {
         this.primaryOwner = primaryOwner;

@@ -1,6 +1,8 @@
 package com.ironhack.ironbank.service;
 
+import com.ironhack.ironbank.helpclasses.Money;
 import com.ironhack.ironbank.model.Savings;
+import com.ironhack.ironbank.model.Transaction;
 import com.ironhack.ironbank.repository.SavingsRepository;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,24 @@ public class SavingsService {
     }
 
 
+    public boolean checkIfExists(UUID accountID) {
+        return savingsRepository.findById(accountID).isPresent();
+    }
 
-
+    public Savings increaseBalance (UUID accountId, Money balanceToBeAdded, Transaction transaction){
+        var account = savingsRepository.findById(accountId).get();
+        Money newBalance = account.getBalance();
+        newBalance.increaseAmount(balanceToBeAdded);
+        account.setBalance(newBalance);
+        //account.getTransactionList().add(transaction);
+        return savingsRepository.save(account);
+    }
+    public Savings decreaseBalance (UUID accountId, Money balanceToBeRemove, Transaction transaction){
+        var account = savingsRepository.findById(accountId).get();
+        Money newBalance = account.getBalance();
+        newBalance.decreaseAmount(balanceToBeRemove);
+        account.setBalance(newBalance);
+        //account.getTransactionList().add(transaction);
+        return savingsRepository.save(account);
+    }
 }

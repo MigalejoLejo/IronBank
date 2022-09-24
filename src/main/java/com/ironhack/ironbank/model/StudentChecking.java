@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -55,6 +56,9 @@ public class StudentChecking {
 
     @Enumerated(EnumType.STRING)
     AccountStatus accountStatus;
+
+//    @OneToMany
+//    List<Transaction> transactionList;
 
     public StudentChecking(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance) {
         this.primaryOwner = primaryOwner;

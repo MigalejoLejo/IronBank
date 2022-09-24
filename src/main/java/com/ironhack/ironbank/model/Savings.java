@@ -11,6 +11,7 @@ import javax.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -60,6 +61,9 @@ public class Savings {
 
     @Enumerated(EnumType.STRING)
     AccountStatus accountStatus;
+
+//    @OneToMany
+//    List<Transaction> transactionList;
 
 
     public Savings(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, BigDecimal interestRate) {

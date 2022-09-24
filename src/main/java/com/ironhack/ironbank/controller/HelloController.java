@@ -17,7 +17,7 @@ public class HelloController {
 
     @GetMapping("/accountholder/hello")
     public ResponseEntity<String> helloMember(Principal principal) {
-        return ResponseEntity.ok("Hello dear member" + principal.getName());
+        return ResponseEntity.ok("Hello dear member " + principal.getName());
     }
 
 

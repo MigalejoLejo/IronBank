@@ -46,7 +46,7 @@ public class AdminController {
 
     // GET
     // **************************************************************************
-    @GetMapping("/get/user/by-name/{username}")
+    @GetMapping("/get/user/by-username/{username}")
     public ResponseEntity<Object> getByUsername(@PathVariable String username) {
         if (adminService.getAccountHolderByUsername(username) != null){
             return ResponseEntity.ok(adminService.getAccountHolderByUsername(username));

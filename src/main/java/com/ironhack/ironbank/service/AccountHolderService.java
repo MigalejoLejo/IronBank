@@ -3,7 +3,6 @@ package com.ironhack.ironbank.service;
 import com.ironhack.ironbank.DTO.AccountsDTO;
 import com.ironhack.ironbank.model.*;
 import com.ironhack.ironbank.repository.AccountHolderRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -28,96 +27,95 @@ public class AccountHolderService {
         this.savingsService = savingsService;
     }
 
+    // --------------------------------------------------------------------------------------------------------
 
     public AccountHolder getByUsername(String username) {
         AccountHolder accountHolder = null;
-        if (accountHolderRepo.findByUsername(username) != null){
+        if (accountHolderRepo.findByUsername(username) != null) {
             accountHolder = accountHolderRepo.findByUsername(username);
         }
         return accountHolder;
     }
 
     public AccountHolder getById(String id) {
-        if (id == null || accountHolderRepo.findById(id).isEmpty()){
+        if (id == null || accountHolderRepo.findById(id).isEmpty()) {
             return null;
         } else {
             return accountHolderRepo.findById(id).get();
         }
     }
 
-    public AccountHolder add (AccountHolder accountHolder){
+    public AccountHolder add(AccountHolder accountHolder) {
         return accountHolderRepo.save(accountHolder);
     }
 
-
     public AccountsDTO getAccounts(String id) {
         var user = accountHolderRepo.findById(id).orElseThrow();
-         return AccountsDTO.fromAccountHolder(user);
+        return AccountsDTO.fromAccountHolder(user);
     }
 
-    public ResponseEntity<String> getAccountById(String ownerId, String accountId) {
+    public ResponseEntity<String> getAccountById(String userId, String accountId) {
 
-        AccountsDTO lists = getAccounts(ownerId);
-        Object account;
+        AccountsDTO userAccounts = getAccounts(userId);
 
-        if (lists.getPrimaryCheckings() != null) {
-            for (Checking c : lists.getPrimaryCheckings()) {
+        if (userAccounts.getPrimaryCheckings() != null) {
+            for (Checking c : userAccounts.getPrimaryCheckings()) {
                 if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
                     return ResponseEntity.ok("Primary Account found: \n" + c);
                 }
             }
         }
 
-        if (lists.getPrimaryStudentCheckings() != null) {
-            for (StudentChecking c : lists.getPrimaryStudentCheckings()) {
+        if (userAccounts.getPrimaryStudentCheckings() != null) {
+            for (StudentChecking c : userAccounts.getPrimaryStudentCheckings()) {
                 if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
                     return ResponseEntity.ok("Primary Account found: \n" + c);
                 }
             }
         }
 
-        if (lists.getPrimaryCreditAccounts() != null) {
-            for (CreditAccount c : lists.getPrimaryCreditAccounts()) {
+        if (userAccounts.getPrimaryCreditAccounts() != null) {
+            for (CreditAccount c : userAccounts.getPrimaryCreditAccounts()) {
                 if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
                     return ResponseEntity.ok("Primary Account found: \n" + c);
                 }
             }
         }
 
-        if (lists.getPrimarySavings() != null) {
-            for (Savings c : lists.getPrimarySavings()) {
+        if (userAccounts.getPrimarySavings() != null) {
+            for (Savings c : userAccounts.getPrimarySavings()) {
                 if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
                     return ResponseEntity.ok("Primary Account found: \n" + c);
                 }
             }
         }
 
-        if (lists.getSecondaryCheckings() != null) {
-            for (Checking c : lists.getSecondaryCheckings()) {
+        if (userAccounts.getSecondaryCheckings() != null) {
+            for (Checking c : userAccounts.getSecondaryCheckings()) {
                 if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
                     return ResponseEntity.ok("Secondary Account found: \n" + c);
                 }
             }
         }
 
-        if (lists.getSecondaryStudentCheckings() != null) {
-            for (StudentChecking c : lists.getSecondaryStudentCheckings()) {
+        if (userAccounts.getSecondaryStudentCheckings() != null) {
+            for (StudentChecking c : userAccounts.getSecondaryStudentCheckings()) {
                 if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
                     return ResponseEntity.ok("Secondary Account found: \n" + c);
                 }
             }
         }
 
-        if (lists.getSecondaryCreditAccounts() != null) {
-            for (CreditAccount c : lists.getSecondaryCreditAccounts()) {
+        if (userAccounts.getSecondaryCreditAccounts() != null) {
+            for (CreditAccount c : userAccounts.getSecondaryCreditAccounts()) {
                 if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
                     return ResponseEntity.ok("Secondary Account found: \n" + c);
                 }
             }
         }
 
-        if (lists.getSecondarySavings() != null) {
-            for (Savings c : lists.getSecondarySavings()) {
+        if (userAccounts.getSecondarySavings() != null) {
+            for (Savings c : userAccounts.getSecondarySavings()) {
                 if (c.getAccountID().compareTo(UUID.fromString(accountId)) == 0) {
                     return ResponseEntity.ok("Secondary Account found: \n" + c);
                 }
@@ -130,5 +128,5 @@ public class AccountHolderService {
     }
 
 
-
 }
+
