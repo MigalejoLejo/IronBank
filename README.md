@@ -64,4 +64,34 @@ For this project I used IntelliJ IDEA to create the code and Postman to access t
 At the beginning this is the Structure I used to organize the code. The endresult is not exactly organized in this way, but this did help me to have a solid structure of what and how I wanted my code to be created.
 ![IronBank drawio](https://user-images.githubusercontent.com/69363801/196229386-18c34b22-3b43-4a4e-92d1-942a1dafc360.png)
 
+# Some Images of the Results
+
+## Admin creating an User:
+![Captura de Pantalla 2022-10-17 a las 18 24 53](https://user-images.githubusercontent.com/69363801/196232099-ada5c117-4e83-44e6-bd82-322bc06fd34e.png)
+
+## Admin finding User by username:
+
+![Captura de Pantalla 2022-10-17 a las 18 25 38](https://user-images.githubusercontent.com/69363801/196232230-59668cfa-7ebe-4338-a56a-eb119ef9c17a.png)
+
+## User geting Token:
+
+![Captura de Pantalla 2022-10-17 a las 18 26 19](https://user-images.githubusercontent.com/69363801/196232329-4584c2e2-0748-48f3-aff4-b9b7bd4fa5b0.png)
+
+## User getting only his information by token:
+
+![Captura de Pantalla 2022-10-17 a las 18 26 47](https://user-images.githubusercontent.com/69363801/196232452-2f51f2cb-f962-4d61-9c00-5642bd908b85.png)
+
+## Admin creating an account for an User using the User-ID:
+
+![Captura de Pantalla 2022-10-17 a las 18 27 50](https://user-images.githubusercontent.com/69363801/196232565-91c254a4-2e4d-4dd0-bca8-41f320c1963c.png)
+
+## User viewing his account information: 
+
+
+![Captura de Pantalla 2022-10-17 a las 18 28 02](https://user-images.githubusercontent.com/69363801/196232672-af5cdea3-0487-4e54-8f91-58ee99e53e88.png)
+
+
+
+
+
 
